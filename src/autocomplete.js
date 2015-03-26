@@ -6,27 +6,27 @@
  * https://github.com/kuhnza/angular-google-places-autocomplete/blob/master/LICENSE
  */
 
- 'use strict';
+'use strict';
 
 angular.module('google.places', [])
-	/**
-	 * DI wrapper around global google places library.
-	 *
-	 * Note: requires the Google Places API to already be loaded on the page.
-	 */
-	.factory('googlePlacesApi', ['$window', function ($window) {
+/**
+ * DI wrapper around global google places library.
+ *
+ * Note: requires the Google Places API to already be loaded on the page.
+ */
+    .factory('googlePlacesApi', ['$window', function ($window) {
         if (!$window.google) throw 'Global `google` var missing. Did you forget to include the places API script?';
 
-		return $window.google;
-	}])
+        return $window.google;
+    }])
 
-	/**
-	 * Autocomplete directive. Use like this:
-	 *
-	 * <input type="text" g-places-autocomplete ng-model="myScopeVar" />
-	 */
-	.directive('gPlacesAutocomplete',
-        [ '$parse', '$compile', '$timeout', '$document', 'googlePlacesApi',
+/**
+ * Autocomplete directive. Use like this:
+ *
+ * <input type="text" g-places-autocomplete ng-model="myScopeVar" />
+ */
+    .directive('gPlacesAutocomplete',
+    ['$parse', '$compile', '$timeout', '$document', 'googlePlacesApi',
         function ($parse, $compile, $timeout, $document, google) {
 
             return {
@@ -38,7 +38,8 @@ angular.module('google.places', [])
                     forceSelection: '=?',
                     customPlaces: '=?'
                 },
-                controller: ['$scope', function ($scope) {}],
+                controller: ['$scope', function ($scope) {
+                }],
                 link: function ($scope, element, attrs, controller) {
                     var keymap = {
                             tab: 9,
@@ -154,7 +155,7 @@ angular.module('google.places', [])
                             $scope.model = prediction.place;
                             $scope.$emit('g-places-autocomplete:select', prediction.place);
                         } else {
-                            placesService.getDetails({ placeId: prediction.place_id }, function (place, status) {
+                            placesService.getDetails({placeId: prediction.place_id}, function (place, status) {
                                 if (status == google.maps.places.PlacesServiceStatus.OK) {
                                     $scope.$apply(function () {
                                         $scope.model = place;
@@ -178,7 +179,7 @@ angular.module('google.places', [])
 
                         $scope.query = viewValue;
 
-                        request = angular.extend({ input: viewValue }, $scope.options);
+                        request = angular.extend({input: viewValue}, $scope.options);
                         autocompleteService.getPlacePredictions(request, function (predictions, status) {
                             $scope.$apply(function () {
                                 var customPlacePredictions;
@@ -201,10 +202,10 @@ angular.module('google.places', [])
                                 if ($scope.predictions.length === 0 && $scope.forceSelection) {
 
                                     var phase = $scope.$root.$$phase;
-                                    var emptyModel = function() {
+                                    var emptyModel = function () {
                                         $scope.model = '';
                                     };
-                                    if(phase == '$apply' || phase == '$digest') {
+                                    if (phase == '$apply' || phase == '$digest') {
                                         emptyModel();
                                     } else {
                                         $scope.$apply(emptyModel);
@@ -223,8 +224,8 @@ angular.module('google.places', [])
 
                         if (isString(modelValue)) {
                             viewValue = modelValue;
-                        } else if (isObject(modelValue)) {
-                            viewValue = modelValue.formatted_address;
+                        } else if (isObject(modelValue) && (modelValue.name || modelValue.formatted_address)) {
+                            viewValue = modelValue.name + ' ' + modelValue.formatted_address;
                         }
 
                         return viewValue;
@@ -278,12 +279,12 @@ angular.module('google.places', [])
                             if (q.length > 0) {
                                 if (fragment.length >= q.length) {
                                     if (startsWith(fragment, q)) {
-                                        matched_substrings.push({ length: q.length, offset: i });
+                                        matched_substrings.push({length: q.length, offset: i});
                                     }
                                     q = '';  // no more matching to do
                                 } else {
                                     if (startsWith(q, fragment)) {
-                                        matched_substrings.push({ length: fragment.length, offset: i });
+                                        matched_substrings.push({length: fragment.length, offset: i});
                                         q = q.replace(fragment, '').trim();
                                     } else {
                                         q = '';  // no more matching to do
@@ -348,7 +349,7 @@ angular.module('google.places', [])
 
         return {
             restrict: 'A',
-            scope:{
+            scope: {
                 input: '=',
                 query: '=',
                 predictions: '=',
@@ -410,10 +411,10 @@ angular.module('google.places', [])
 
         return {
             restrict: 'A',
-            scope:{
-                index:'=',
-                prediction:'=',
-                query:'='
+            scope: {
+                index: '=',
+                prediction: '=',
+                query: '='
             },
             template: TEMPLATE.join('')
         }
@@ -455,5 +456,4 @@ angular.module('google.places', [])
             return (condition) ? input + ',' : input;
         }
     }]);
-
 
